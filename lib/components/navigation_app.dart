@@ -1,8 +1,11 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:hidush/components/scrollable_app_bar.dart';
+import 'package:hidush/pages/home.dart';
 
 import 'bottom_nav_bar.dart';
-import 'curved_bottom_nav_bar.dart';
 
 class NavigationApp extends StatefulWidget {
   const NavigationApp({Key? key}) : super(key: key);
@@ -14,9 +17,7 @@ class NavigationApp extends StatefulWidget {
 class _NavigationAppState extends State<NavigationApp> {
   int _pageIndex = 0;
   static const List<Widget> _pages = <Widget>[
-    Text(
-      'בית',
-    ),
+    Home(),
     Text(
       'קצרים',
     ),
@@ -37,21 +38,15 @@ class _NavigationAppState extends State<NavigationApp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-          title: const Text(
-            "חידוש",
-            style: TextStyle(
-                fontSize: 28,
-                color: Colors.black,
-                fontFamily: 'Assistant',
-                fontWeight: FontWeight.w600),
-          ),
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          systemOverlayStyle:
-              const SystemUiOverlayStyle(statusBarColor: Colors.black)),
-      body: Center(child: _pages.elementAt(_pageIndex)),
+      body: NestedScrollView(
+        floatHeaderSlivers: true,
+        headerSliverBuilder: (context, innerBoxIsScrolled) =>
+            [const ScrollableAppBar()],
+        body: RefreshIndicator(
+          onRefresh: () async => Future.delayed(const Duration(seconds: 1)),
+          child: _pages.elementAt(_pageIndex),
+        ),
+      ),
       bottomNavigationBar:
           BottomNavBar(pageIndex: _pageIndex, onTap: onTabTapped),
     );

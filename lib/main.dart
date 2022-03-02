@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'components/navigation_app.dart';
 
 class CustomMateriaApp extends StatelessWidget {
+  const CustomMateriaApp({Key? key}) : super(key: key);
+
+  @override
   Widget build(BuildContext context) {
     return const MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -13,4 +16,4 @@ class CustomMateriaApp extends StatelessWidget {
   }
 }
 
-void main() => runApp(CustomMateriaApp());
+void main() => runApp(const CustomMateriaApp());
