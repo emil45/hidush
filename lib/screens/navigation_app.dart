@@ -1,11 +1,7 @@
-import 'dart:developer';
-import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:hidush/components/bottom_nav_bar.dart';
 import 'package:hidush/components/scrollable_app_bar.dart';
-import 'package:hidush/pages/home.dart';
-
-import 'bottom_nav_bar.dart';
+import 'package:hidush/screens/home.dart';
 
 class NavigationApp extends StatefulWidget {
   const NavigationApp({Key? key}) : super(key: key);

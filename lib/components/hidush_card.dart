@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hidush/common/utils.dart';
+import 'package:share/share.dart';
 
 class HidushCard extends StatelessWidget {
-  const HidushCard({
+  HidushCard({
     Key? key,
     required this.source,
     required this.sourceDetails,
@@ -11,6 +12,9 @@ class HidushCard extends StatelessWidget {
     required this.rabbi,
     required this.rabbiImage,
     required this.labels,
+    required this.isLiked,
+    required this.likes,
+    required this.shares,
   }) : super(key: key);
 
   final String source;
@@ -20,9 +24,14 @@ class HidushCard extends StatelessWidget {
   final String rabbi;
   final String rabbiImage;
   final List<String> labels;
+  final bool isLiked;
+  final int likes;
+  final int shares;
 
   @override
   Widget build(BuildContext context) {
+    IconData likeIcon = isLiked ? Icons.favorite : Icons.favorite_border;
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
@@ -87,16 +96,28 @@ class HidushCard extends StatelessWidget {
                       ))
                 ]),
                 Row(
-                  children: const [
-                    Icon(
-                      Icons.share,
-                      color: Colors.grey,
+                  children: [
+                    Text('$shares'),
+                    IconButton(
+                      onPressed: () async => Share.share(
+                          '$quota ($source) \n\n $peerosh ($rabbi)',
+                          subject: 'חידוש מעניין מחידוש'),
+                      icon: const Icon(
+                        Icons.share,
+                        color: Colors.blueGrey,
+                      ),
                     ),
-                    Padding(
-                      padding: EdgeInsets.only(right: 20),
-                      child: Icon(
-                        Icons.favorite_border,
-                        color: Colors.grey,
+                    Text('$likes'),
+                    IconButton(
+                      onPressed: () async => {
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
+                          content: Text('יופי :) שמחים שאהבת'),
+                        ))
+                      },
+                      icon: Icon(
+                        likeIcon,
+                        color: Colors.blueGrey,
                       ),
                     ),
                   ],
