@@ -2,13 +2,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hidush/firebase_options.dart';
-import 'package:hidush/models/user.dart';
+import 'package:hidush/models/user.dart' hide User;
 
 class AuthService {
   final FirebaseAuth auth = FirebaseAuth.instance;
 
   AuthenticatedUser? _serializeFirebaseUser(User? user) {
-    return user != null ? AuthenticatedUser(uid: user.uid) : null;
+    return user != null
+        ? AuthenticatedUser(uid: user.uid, email: user.email)
+        : null;
   }
 
   static Future<FirebaseApp> initializeFirebase() async {

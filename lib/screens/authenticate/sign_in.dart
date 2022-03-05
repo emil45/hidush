@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hidush/widgets/buttons/anonymous_sign_in_button.dart';
-import 'package:hidush/widgets/buttons/google_sign_in_button.dart';
+import 'package:hidush/services/auth.dart';
+import 'package:hidush/widgets/buttons/sign_in_button.dart';
 
 class SignIn extends StatefulWidget {
   const SignIn({Key? key}) : super(key: key);
@@ -10,6 +10,8 @@ class SignIn extends StatefulWidget {
 }
 
 class _SignInState extends State<SignIn> {
+  final AuthService _auth = AuthService();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,8 +49,19 @@ class _SignInState extends State<SignIn> {
                   ],
                 ),
               ),
-              const GoogleSignInButton(),
-              const AnonymousSignInButton()
+              SignInButton(
+                icon: const Image(
+                  image: AssetImage("assets/images/google_logo.png"),
+                  height: 20.0,
+                ),
+                buttonText: 'כניסה עם גוגל',
+                onPress: _auth.signInWithGoogle,
+              ),
+              SignInButton(
+                icon: const Icon(Icons.person, size: 25.0),
+                buttonText: 'כניסה אנונימית',
+                onPress: _auth.signInAnonymous,
+              )
             ],
           ),
         ),

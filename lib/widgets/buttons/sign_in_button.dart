@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:hidush/services/auth.dart';
 
-class GoogleSignInButton extends StatefulWidget {
-  const GoogleSignInButton({Key? key}) : super(key: key);
+class SignInButton extends StatefulWidget {
+  const SignInButton({
+    Key? key,
+    required this.icon,
+    required this.buttonText,
+    required this.onPress,
+  }) : super(key: key);
+
+  final Widget icon;
+  final String buttonText;
+  final Function onPress;
 
   @override
-  _GoogleSignInButtonState createState() => _GoogleSignInButtonState();
+  _SignInButtonState createState() => _SignInButtonState();
 }
 
-class _GoogleSignInButtonState extends State<GoogleSignInButton> {
+class _SignInButtonState extends State<SignInButton> {
   bool _isSigningIn = false;
 
   @override
@@ -29,32 +37,23 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
                 ),
               ),
               onPressed: () async {
-                setState(() {
-                  _isSigningIn = true;
-                });
-
-                await AuthService().signInWithGoogle();
-
-                setState(() {
-                  _isSigningIn = false;
-                });
+                setState(() => _isSigningIn = true);
+                await widget.onPress();
+                if (mounted) setState(() => _isSigningIn = false);
               },
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const <Widget>[
-                    Image(
-                      image: AssetImage("assets/images/google_logo.png"),
-                      height: 30.0,
-                    ),
+                  children: <Widget>[
+                    widget.icon,
                     Padding(
-                      padding: EdgeInsets.only(right: 10),
+                      padding: const EdgeInsets.only(right: 10),
                       child: Text(
-                        'התחבר עם גוגל',
-                        style: TextStyle(
-                          fontSize: 18,
+                        widget.buttonText,
+                        style: const TextStyle(
+                          fontSize: 16,
                           color: Colors.black54,
                           fontWeight: FontWeight.w600,
                         ),

@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:hidush/widgets/hidush_card.dart';
 
 class Home extends StatelessWidget {
-  Home({Key? key}) : super(key: key);
+  const Home({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     List<Widget> cards = [
-      for (int i = 0; i < 20; i++)
+      for (int i = 0; i < 5; i++)
         HidushCard(
           key: Key(i.toString()),
           source: 'תלמוד בבלי',

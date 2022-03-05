@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hidush/common/themes.dart';
 import 'package:hidush/models/user.dart';
 import 'package:hidush/screens/app.dart';
 import 'package:hidush/services/auth.dart';
@@ -12,9 +13,11 @@ class CustomMateriaApp extends StatelessWidget {
     return StreamProvider<AuthenticatedUser?>.value(
       value: AuthService().user,
       initialData: null,
-      child: const MaterialApp(
+      child: MaterialApp(
+        theme: AppThemes.lightTheme,
+        darkTheme: AppThemes.darkTheme,
         debugShowCheckedModeBanner: false,
-        home: Directionality(
+        home: const Directionality(
           textDirection: TextDirection.rtl,
           child: App(),
         ),
