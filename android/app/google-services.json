@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "320033115359",
+    "project_id": "hidush-1337",
+    "storage_bucket": "hidush-1337.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:320033115359:android:d95f9a3d11faab03d96d6a",
+        "android_client_info": {
+          "package_name": "io.hidush.hidush"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "320033115359-0hj18iuta4mecsshc3p3ln3gab4s64l4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCv70G4UJMnvogJR907Xxwbu7Clr26Q4hk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "320033115359-0hj18iuta4mecsshc3p3ln3gab4s64l4.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "320033115359-8t9t6ltati6i3tjibjbhg94itkjai6bd.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "io.hidush.hidush"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

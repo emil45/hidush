@@ -38,6 +38,9 @@ dependencies:
   share: ^2.0.4
   firebase_core: ^1.12.0
   firebase_auth: ^3.3.8
+  google_sign_in: ^5.2.4
+  provider: ^6.0.2
+  cloud_firestore: ^3.1.10
 
 dev_dependencies:
   flutter_test:
@@ -62,7 +65,8 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/images/rabbi/rav-maor.png
+    - assets/images/
+    - assets/images/rabbi/
 
   fonts:
     - family: Assistant

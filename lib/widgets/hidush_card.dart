@@ -33,6 +33,7 @@ class HidushCard extends StatelessWidget {
     IconData likeIcon = isLiked ? Icons.favorite : Icons.favorite_border;
 
     return Card(
+      key: key,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
         child: Column(

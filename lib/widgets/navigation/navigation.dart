@@ -1,34 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:hidush/components/bottom_nav_bar.dart';
-import 'package:hidush/components/scrollable_app_bar.dart';
-import 'package:hidush/screens/home.dart';
+import 'package:hidush/widgets/navigation/bottom_nav_bar.dart';
+import 'package:hidush/widgets/navigation/scrollable_app_bar.dart';
+import 'package:hidush/screens/home/home.dart';
+import 'package:hidush/screens/personal/personal.dart';
 
-class NavigationApp extends StatefulWidget {
-  const NavigationApp({Key? key}) : super(key: key);
+class Navigation extends StatefulWidget {
+  const Navigation({Key? key}) : super(key: key);
 
   @override
-  _NavigationAppState createState() => _NavigationAppState();
+  State<Navigation> createState() => _NavigationState();
 }
 
-class _NavigationAppState extends State<NavigationApp> {
+class _NavigationState extends State<Navigation> {
   int _pageIndex = 0;
-  static const List<Widget> _pages = <Widget>[
+
+  final List<Widget> _pages = <Widget>[
     Home(),
-    Text(
-      'קצרים',
-    ),
-    Text(
-      'מועדפים',
-    ),
-    Text(
-      'הגדרות',
-    ),
+    Text('קצרים'),
+    Text('מועדפים'),
+    Personal()
   ];
 
   void onTabTapped(int index) {
-    setState(() {
-      _pageIndex = index;
-    });
+    setState(() => _pageIndex = index);
   }
 
   @override

@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:hidush/components/hidush_card.dart';
+import 'package:hidush/widgets/hidush_card.dart';
 
 class Home extends StatelessWidget {
-  const Home({Key? key}) : super(key: key);
+  Home({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     List<Widget> cards = [
       for (int i = 0; i < 20; i++)
         HidushCard(
+          key: Key(i.toString()),
           source: 'תלמוד בבלי',
           sourceDetails: 'דף ז עמוד ב',
           quota: '״בראשית ברא השם את השמיים ואת הארץ״',
