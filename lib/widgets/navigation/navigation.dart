@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hidush/screens/favorites/favorites.dart';
 import 'package:hidush/widgets/navigation/bottom_nav_bar.dart';
+import 'package:hidush/widgets/navigation/regular_app_bar.dart';
 import 'package:hidush/widgets/navigation/scrollable_app_bar.dart';
 import 'package:hidush/screens/home/home.dart';
 import 'package:hidush/screens/personal/personal.dart';
@@ -15,11 +16,11 @@ class Navigation extends StatefulWidget {
 class _NavigationState extends State<Navigation> {
   int _pageIndex = 0;
 
-  final Map<int, dynamic> _pagess = {
-    0: {'widget': Home(), 'appBarTitle': "חידוש"},
-    1: {'widget': const Text('קצרים'), 'appBarTitle': "קצרים"},
-    2: {'widget': const Favorites(), 'appBarTitle': "מועדפים"},
-    3: {'widget': const Personal(), 'appBarTitle': "הגדרות"},
+  final Map<int, dynamic> _pages = {
+    0: {'widget': Home(), 'appBarTitle': "חידוש", 'scroll': true},
+    1: {'widget': const Text('קצרים'), 'appBarTitle': "קצרים", 'scroll': false},
+    2: {'widget': const Favorites(), 'appBarTitle': "מועדפים", 'scroll': true},
+    3: {'widget': const Personal(), 'appBarTitle': "הגדרות", 'scroll': false},
   };
 
   void onTabTapped(int index) {
@@ -28,18 +29,28 @@ class _NavigationState extends State<Navigation> {
 
   @override
   Widget build(BuildContext context) {
+    if (_pages[_pageIndex]['scroll'] == false) {
+      return Scaffold(
+        appBar: RegularAppBar(
+          titleText: _pages[_pageIndex]['appBarTitle'],
+          context: context,
+        ),
+        body: _pages[_pageIndex]['widget'],
+        bottomNavigationBar: BottomNavBar(pageIndex: _pageIndex, onTap: onTabTapped),
+      );
+    }
     return Scaffold(
       body: NestedScrollView(
         floatHeaderSlivers: true,
         headerSliverBuilder: (context, innerBoxIsScrolled) => [
           ScrollableAppBar(
-            titleText: _pagess[_pageIndex]['appBarTitle'],
+            titleText: _pages[_pageIndex]['appBarTitle'],
             context: context,
           )
         ],
         body: RefreshIndicator(
           onRefresh: () async => Future.delayed(const Duration(seconds: 1)),
-          child: _pagess[_pageIndex]['widget'],
+          child: _pages[_pageIndex]['widget'],
         ),
       ),
       bottomNavigationBar: BottomNavBar(pageIndex: _pageIndex, onTap: onTabTapped),

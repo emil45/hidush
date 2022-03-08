@@ -4,33 +4,31 @@ import 'package:flutter/material.dart';
 import 'package:hidush/common/utils.dart';
 import 'package:hidush/models/user.dart';
 import 'package:hidush/services/db.dart';
+import 'package:hidush/widgets/buttons/emote_button.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 
 class HidushCard extends StatefulWidget {
-  HidushCard({
-    required ValueKey key,
-    required this.source,
-    required this.sourceDetails,
-    required this.quota,
-    required this.peerosh,
-    required this.rabbi,
-    required this.rabbiImage,
-    required this.labels,
-    required this.isLiked,
-    required this.likes,
-    required this.shares,
-  }) : super(key: key);
+  HidushCard(
+      {required ValueKey key,
+      required this.id,
+      required this.source,
+      required this.sourceDetails,
+      required this.quote,
+      required this.peroosh,
+      required this.rabbi,
+      required this.rabbiImage,
+      required this.categories,
+      required this.isLiked,
+      required this.likes,
+      required this.shares,
+      this.likePressed})
+      : super(key: key);
 
-  final String source;
-  final String sourceDetails;
-  final String quota;
-  final String peerosh;
-  final String rabbi;
-  final String rabbiImage;
-  final List<String> labels;
-  int shares;
-  int likes;
+  final String id, source, sourceDetails, quote, peroosh, rabbi, rabbiImage;
+  final List<String> categories;
+  void Function(String)? likePressed;
+  int shares, likes;
   bool isLiked;
 
   @override
@@ -43,22 +41,28 @@ class _HidushCardState extends State<HidushCard> {
 
   void _handleLikePress() async {
     final AuthenticatedUser? user = Provider.of<AuthenticatedUser?>(context, listen: false);
-    await dbService.updateFavoriteHidush(user!.uid, (widget.key as ValueKey).value, !widget.isLiked);
+    await dbService.updateFavoriteHidush(user!.uid, widget.id, !widget.isLiked);
 
-    setState(() => widget.isLiked = !widget.isLiked);
-    setState(() => widget.isLiked ? widget.likes++ : widget.likes--);
+    setState(() {
+      widget.likePressed != null ? widget.likePressed!((widget.key as ValueKey).value) : null;
+      widget.isLiked = !widget.isLiked;
+      widget.isLiked ? widget.likes++ : widget.likes--;
+    });
   }
 
   void _handleSharedPress() async {
     final AuthenticatedUser? user = Provider.of<AuthenticatedUser?>(context, listen: false);
-    await dbService.updateSharedHidush(user!.uid, (widget.key as ValueKey).value);
+
+    await Share.share('${widget.quote} (${widget.source}) \n\n ${widget.peroosh} (${widget.rabbi})',
+        subject: 'חידוש מעניין מחידוש');
+    await dbService.updateSharedHidush(user!.uid, widget.id);
 
     setState(() => widget.shares++);
   }
 
   @override
   Widget build(BuildContext context) {
-    log("Card rendered. No: ${widget.key}");
+    log("Card rendered. No: ${widget.id}");
     likeIcon = widget.isLiked ? Icons.favorite : Icons.favorite_border;
 
     return Card(
@@ -98,7 +102,7 @@ class _HidushCardState extends State<HidushCard> {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
-              child: Text(widget.quota),
+              child: Text(widget.quote),
             ),
             const Divider(
               thickness: 1,
@@ -107,41 +111,35 @@ class _HidushCardState extends State<HidushCard> {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
-              child: Text(widget.peerosh),
+              child: Text(widget.peroosh),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(children: [
-                  ...widget.labels.map((labelText) => Padding(
+                  ...widget.categories.map((labelText) => Padding(
                         padding: const EdgeInsets.only(left: 10),
                         child: Chip(
                           backgroundColor: labelsColors[labelText] ?? Colors.grey[300],
                           label: Text(labelText),
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                          ),
                         ),
                       ))
                 ]),
                 Row(
                   children: [
-                    Text('${widget.shares}'),
-                    IconButton(
-                      onPressed: () async {
-                        await Share.share('${widget.quota} (${widget.source}) \n\n ${widget.peerosh} (${widget.rabbi})',
-                            subject: 'חידוש מעניין מחידוש');
-                        _handleSharedPress();
-                      },
-                      icon: const Icon(
-                        Icons.share,
-                        color: Colors.blueGrey,
-                      ),
+                    EmoteButton(
+                      text: widget.shares,
+                      icon: Icons.share,
+                      onPress: _handleSharedPress,
                     ),
-                    Text('${widget.likes}'),
-                    IconButton(
-                      onPressed: _handleLikePress,
-                      icon: Icon(
-                        likeIcon,
-                        color: Colors.blueGrey,
-                      ),
+                    const Padding(padding: EdgeInsets.only(right: 15)),
+                    EmoteButton(
+                      text: widget.likes,
+                      icon: likeIcon,
+                      onPress: _handleLikePress,
                     ),
                   ],
                 )

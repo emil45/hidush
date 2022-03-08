@@ -14,7 +14,9 @@ class DBService {
 
     if (snapShot.exists == false) {
       try {
-        await users.doc(user.uid).set({'email': user.email, 'favorite_hidushim': [], 'shared_hidushim': {}});
+        await users
+            .doc(user.uid)
+            .set({'uid': user.uid, 'email': user.email, 'likedHidushim': [], 'sharedHidushim': {}});
         log("Succesfully created user. UID: ${user.uid}, Email: ${user.email}");
       } on Exception catch (e) {
         log("Failed to create user. UID: ${user.uid}, Email: ${user.email}");
@@ -25,16 +27,21 @@ class DBService {
     }
   }
 
+  Future<User> getUser(String userUid) async {
+    DocumentSnapshot snapshot = await users.doc(userUid).get();
+    return User.fromJson(snapshot.data() as Map<String, dynamic>);
+  }
+
   Future<void> updateFavoriteHidush(String userUid, String hidushId, bool likeStatus) async {
     try {
       if (likeStatus) {
         await users.doc(userUid).update({
-          'favorite_hidushim': FieldValue.arrayUnion([hidushId])
+          'likedHidushim': FieldValue.arrayUnion([hidushId])
         });
         await hidushim.doc(hidushId).update({'likes': FieldValue.increment(1)});
       } else {
         await users.doc(userUid).update({
-          'favorite_hidushim': FieldValue.arrayRemove([hidushId])
+          'likedHidushim': FieldValue.arrayRemove([hidushId])
         });
         await hidushim.doc(hidushId).update({'likes': FieldValue.increment(-1)});
       }
@@ -46,9 +53,7 @@ class DBService {
 
   Future<void> updateSharedHidush(String userUid, String hidushId) async {
     try {
-      await users.doc(userUid).update({
-        'shared_hidushim': FieldValue.arrayUnion([hidushId])
-      });
+      await users.doc(userUid).update({'sharedHidushim.$hidushId': FieldValue.increment(1)});
       await hidushim.doc(hidushId).update({'shares': FieldValue.increment(1)});
       log("Succesfully updated the shared hidush. UserID: $userUid, HidushID: $hidushId");
     } on Exception catch (e) {
@@ -58,7 +63,7 @@ class DBService {
 
   Future<List<Hidush>> getUserFavoriteHidushim(String userUid) async {
     DocumentSnapshot snapshot = await users.doc(userUid).get();
-    List favoriteHidushim = snapshot['favorite_hidushim'];
+    List favoriteHidushim = snapshot['likedHidushim'];
 
     if (favoriteHidushim.isNotEmpty) {
       QuerySnapshot query = await hidushim.where(FieldPath.documentId, whereIn: favoriteHidushim).get();

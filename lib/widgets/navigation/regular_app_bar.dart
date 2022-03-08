@@ -1,13 +1,11 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class ScrollableAppBar extends SliverAppBar {
+class RegularAppBar extends AppBar {
   final String titleText;
   final BuildContext context;
 
-  ScrollableAppBar({Key? key, required this.titleText, required this.context})
+  RegularAppBar({Key? key, required this.titleText, required this.context})
       : super(
           key: key,
           actions: [
@@ -18,8 +16,6 @@ class ScrollableAppBar extends SliverAppBar {
               icon: const Icon(Icons.adb, color: Colors.black),
             )
           ],
-          forceElevated: true,
-          floating: true,
           title: Text(
             titleText,
             style: const TextStyle(

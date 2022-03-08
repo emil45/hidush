@@ -26,8 +26,10 @@ class _AppState extends State<App> {
       return const SignIn();
     } else {
       log('User logged in. UID: ${user.uid}, Email: ${user.email}');
-      dbService.upsertUser(user);
-      return const Navigation();
+      return FutureBuilder(
+        future: dbService.upsertUser(user),
+        builder: (context, snapshot) => const Navigation(),
+      );
     }
   }
 }

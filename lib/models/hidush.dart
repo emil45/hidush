@@ -4,17 +4,18 @@ part 'hidush.g.dart';
 
 @JsonSerializable()
 class Hidush {
-  String source, sourceDetails, quota, peerosh, rabbi;
-  List<String> labels;
+  String id, source, sourceDetails, quote, peroosh, rabbi;
+  List<String> categories;
   int likes, shares;
 
   Hidush({
+    required this.id,
     required this.source,
     required this.sourceDetails,
-    required this.quota,
-    required this.peerosh,
+    required this.quote,
+    required this.peroosh,
     required this.rabbi,
-    required this.labels,
+    required this.categories,
     required this.likes,
     required this.shares,
   });

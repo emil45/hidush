@@ -17,10 +17,12 @@ class Favorites extends StatefulWidget {
 
 class _FavoritesState extends State<Favorites> {
   DBService dbService = DBService();
-  bool isLiked = true;
+  late List<Hidush> hidushim;
 
-  void handleIsLikedState() {
-    if (isLiked == false) {}
+  void handleLikePress(String index) {
+    setState(() {
+      hidushim.removeAt(int.parse(index));
+    });
   }
 
   @override
@@ -33,7 +35,7 @@ class _FavoritesState extends State<Favorites> {
           if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
           } else {
-            List<Hidush> hidushim = snapshot.data!;
+            hidushim = snapshot.data!;
             if (hidushim.isEmpty) {
               return const Center(child: Text("אין לך חידושים מועדפים"));
             }
@@ -43,16 +45,18 @@ class _FavoritesState extends State<Favorites> {
                 itemBuilder: (BuildContext context, int index) {
                   return HidushCard(
                     key: ValueKey(index.toString()),
+                    id: hidushim[index].id,
                     source: hidushim[index].source,
                     sourceDetails: hidushim[index].sourceDetails,
-                    quota: hidushim[index].quota,
-                    peerosh: hidushim[index].peerosh,
-                    labels: hidushim[index].labels,
+                    quote: hidushim[index].quote,
+                    peroosh: hidushim[index].peroosh,
+                    categories: hidushim[index].categories,
                     rabbi: hidushim[index].rabbi,
                     rabbiImage: rabbiToImage[hidushim[index].rabbi],
                     isLiked: true,
                     likes: hidushim[index].likes,
                     shares: hidushim[index].shares,
+                    likePressed: handleLikePress,
                   );
                 });
           }

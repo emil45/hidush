@@ -1,0 +1,2 @@
+contentful==1.13.1
+firebase_admin==5.2.0
