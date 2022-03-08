@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hidush/models/user.dart';
@@ -8,7 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
 
 class Personal extends StatefulWidget {
-  Personal({Key? key}) : super(key: key);
+  const Personal({Key? key}) : super(key: key);
 
   @override
   State<Personal> createState() => _PersonalState();
@@ -55,8 +53,7 @@ class _PersonalState extends State<Personal> {
               title: const Text('סתם לצחוקים'),
               onPressed: (value) async => null,
               initialValue: switchState,
-              onToggle: (bool value) =>
-                  setState(() => switchState = !switchState),
+              onToggle: (bool value) => setState(() => switchState = !switchState),
             ),
           ],
         ),

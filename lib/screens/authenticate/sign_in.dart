@@ -34,8 +34,7 @@ class _SignInState extends State<SignIn> {
                   children: [
                     Flexible(
                       flex: 1,
-                      child: Image.asset('assets/images/firebase_logo.png',
-                          height: 160),
+                      child: Image.asset('assets/images/firebase_logo.png', height: 160),
                     ),
                     const SizedBox(height: 20),
                     const Text(
@@ -54,12 +53,12 @@ class _SignInState extends State<SignIn> {
                   image: AssetImage("assets/images/google_logo.png"),
                   height: 20.0,
                 ),
-                buttonText: 'כניסה עם גוגל',
+                buttonText: 'התחברות עם Google',
                 onPress: _auth.signInWithGoogle,
               ),
               SignInButton(
                 icon: const Icon(Icons.person, size: 25.0),
-                buttonText: 'כניסה אנונימית',
+                buttonText: 'התחברות אנונימית',
                 onPress: _auth.signInAnonymous,
               )
             ],

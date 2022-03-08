@@ -10,9 +10,13 @@ class CustomMateriaApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamProvider<AuthenticatedUser?>.value(
-      value: AuthService().user,
-      initialData: null,
+    return MultiProvider(
+      providers: [
+        StreamProvider<AuthenticatedUser?>.value(
+          value: AuthService().user,
+          initialData: null,
+        )
+      ],
       child: MaterialApp(
         theme: AppThemes.lightTheme,
         darkTheme: AppThemes.darkTheme,

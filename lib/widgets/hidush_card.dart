@@ -1,10 +1,15 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:hidush/common/utils.dart';
+import 'package:hidush/models/user.dart';
+import 'package:hidush/services/db.dart';
+import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 
-class HidushCard extends StatelessWidget {
+class HidushCard extends StatefulWidget {
   HidushCard({
-    Key? key,
+    required ValueKey key,
     required this.source,
     required this.sourceDetails,
     required this.quota,
@@ -24,16 +29,40 @@ class HidushCard extends StatelessWidget {
   final String rabbi;
   final String rabbiImage;
   final List<String> labels;
-  final bool isLiked;
-  final int likes;
-  final int shares;
+  int shares;
+  int likes;
+  bool isLiked;
+
+  @override
+  State<HidushCard> createState() => _HidushCardState();
+}
+
+class _HidushCardState extends State<HidushCard> {
+  DBService dbService = DBService();
+  IconData likeIcon = Icons.favorite;
+
+  void _handleLikePress() async {
+    final AuthenticatedUser? user = Provider.of<AuthenticatedUser?>(context, listen: false);
+    await dbService.updateFavoriteHidush(user!.uid, (widget.key as ValueKey).value, !widget.isLiked);
+
+    setState(() => widget.isLiked = !widget.isLiked);
+    setState(() => widget.isLiked ? widget.likes++ : widget.likes--);
+  }
+
+  void _handleSharedPress() async {
+    final AuthenticatedUser? user = Provider.of<AuthenticatedUser?>(context, listen: false);
+    await dbService.updateSharedHidush(user!.uid, (widget.key as ValueKey).value);
+
+    setState(() => widget.shares++);
+  }
 
   @override
   Widget build(BuildContext context) {
-    IconData likeIcon = isLiked ? Icons.favorite : Icons.favorite_border;
+    log("Card rendered. No: ${widget.key}");
+    likeIcon = widget.isLiked ? Icons.favorite : Icons.favorite_border;
 
     return Card(
-      key: key,
+      key: widget.key,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
         child: Column(
@@ -46,14 +75,11 @@ class HidushCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      source,
-                      style: const TextStyle(
-                          fontSize: 20,
-                          fontFamily: 'Assistant',
-                          fontWeight: FontWeight.w600),
+                      widget.source,
+                      style: const TextStyle(fontSize: 20, fontFamily: 'Assistant', fontWeight: FontWeight.w600),
                     ),
                     Text(
-                      sourceDetails,
+                      widget.sourceDetails,
                       style: const TextStyle(fontSize: 14, color: Colors.grey),
                     )
                   ],
@@ -61,18 +87,18 @@ class HidushCard extends StatelessWidget {
                 Column(
                   children: [
                     Image(
-                      image: AssetImage(rabbiImage),
+                      image: AssetImage(widget.rabbiImage),
                       height: 45,
                       width: 45,
                     ),
-                    Text(rabbi, style: const TextStyle(fontSize: 8)),
+                    Text(widget.rabbi, style: const TextStyle(fontSize: 8)),
                   ],
                 )
               ],
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
-              child: Text(quota),
+              child: Text(widget.quota),
             ),
             const Divider(
               thickness: 1,
@@ -81,41 +107,37 @@ class HidushCard extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
-              child: Text(peerosh),
+              child: Text(widget.peerosh),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(children: [
-                  ...labels.map((labelText) => Padding(
+                  ...widget.labels.map((labelText) => Padding(
                         padding: const EdgeInsets.only(left: 10),
                         child: Chip(
-                          backgroundColor:
-                              labelsColors[labelText] ?? Colors.grey[300],
+                          backgroundColor: labelsColors[labelText] ?? Colors.grey[300],
                           label: Text(labelText),
                         ),
                       ))
                 ]),
                 Row(
                   children: [
-                    Text('$shares'),
+                    Text('${widget.shares}'),
                     IconButton(
-                      onPressed: () async => Share.share(
-                          '$quota ($source) \n\n $peerosh ($rabbi)',
-                          subject: 'חידוש מעניין מחידוש'),
+                      onPressed: () async {
+                        await Share.share('${widget.quota} (${widget.source}) \n\n ${widget.peerosh} (${widget.rabbi})',
+                            subject: 'חידוש מעניין מחידוש');
+                        _handleSharedPress();
+                      },
                       icon: const Icon(
                         Icons.share,
                         color: Colors.blueGrey,
                       ),
                     ),
-                    Text('$likes'),
+                    Text('${widget.likes}'),
                     IconButton(
-                      onPressed: () async => {
-                        ScaffoldMessenger.of(context)
-                            .showSnackBar(const SnackBar(
-                          content: Text('יופי :) שמחים שאהבת'),
-                        ))
-                      },
+                      onPressed: _handleLikePress,
                       icon: Icon(
                         likeIcon,
                         color: Colors.blueGrey,
