@@ -48,10 +48,7 @@ class _NavigationState extends State<Navigation> {
             context: context,
           )
         ],
-        body: RefreshIndicator(
-          onRefresh: () async => Future.delayed(const Duration(seconds: 1)),
-          child: _pages[_pageIndex]['widget'],
-        ),
+        body: _pages[_pageIndex]['widget'],
       ),
       bottomNavigationBar: BottomNavBar(pageIndex: _pageIndex, onTap: onTabTapped),
     );

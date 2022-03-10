@@ -44,6 +44,7 @@ dependencies:
   settings_ui: ^2.0.2
   json_serializable: ^6.1.5
   build_runner: ^2.1.7
+  like_button: ^2.0.4
 
 dev_dependencies:
   flutter_test:
@@ -68,6 +69,7 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/texts/
     - assets/images/
     - assets/images/rabbi/
 

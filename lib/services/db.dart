@@ -8,6 +8,7 @@ class DBService {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   CollectionReference users = FirebaseFirestore.instance.collection('users');
   CollectionReference hidushim = FirebaseFirestore.instance.collection('hidushim');
+  late DocumentSnapshot mostRecentHidush;
 
   Future<void> upsertUser(AuthenticatedUser user) async {
     DocumentSnapshot snapShot = await users.doc(user.uid).get();
@@ -73,8 +74,17 @@ class DBService {
     }
   }
 
-  Future<List<Hidush>> getHidushim() async {
-    QuerySnapshot snapshot = await hidushim.limit(10).get();
+  Future<List<Hidush>> getHidushim({bool? refresh}) async {
+    QuerySnapshot snapshot;
+    if (refresh == null) {
+      snapshot = await hidushim.orderBy('lastUpdate', descending: true).limit(10).get();
+      mostRecentHidush = snapshot.docs[0];
+    } else {
+      snapshot =
+          await hidushim.orderBy('lastUpdate', descending: true).endBeforeDocument(mostRecentHidush).limit(10).get();
+      snapshot.docs.isNotEmpty ? mostRecentHidush = snapshot.docs[0] : null;
+    }
+
     return snapshot.docs.map((e) => Hidush.fromJson(e.data() as Map<String, dynamic>)).toList();
   }
 }

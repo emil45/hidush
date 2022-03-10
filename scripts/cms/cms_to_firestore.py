@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 import logging
 import os
 from pathlib import Path
@@ -23,6 +24,7 @@ class Hidush:
 	peroosh: str
 	rabbi: str
 	categories: List[str]
+	lastUpdate: datetime
 
 
 cred = credentials.Certificate(Path(__file__).parent / "serviceAccountKey.json")
@@ -39,7 +41,8 @@ def get_entries() -> List[Hidush]:
 	return [
 		Hidush(id=entry.id, quote=entry.quote['content'][0]['content'][0]['value'],
 		       peroosh=entry.peroosh['content'][0]['content'][0]['value'],
-		       source=entry.source, sourceDetails=entry.source_details, rabbi=entry.rabbi, categories=entry.categories)
+		       source=entry.source, sourceDetails=entry.source_details, 
+					 rabbi=entry.rabbi, categories=entry.categories, lastUpdate=datetime.utcnow())
 		for entry in entries
 	]
 
@@ -48,9 +51,10 @@ def upsert_entries(entries: List[Hidush]):
 	for entry in entries:
 		try:
 			if hidushim_collection.document(entry.id).get().exists:
-				hidushim_collection.document(entry.id).update(vars(entry))
-				print(f"Successfully updated the entry. Entry: {entry.id}")
-				logging.info(f"Successfully updated the entry. Entry: {entry.id}")
+				print(f"Updates not supported yet. Entry: {entry.id}")
+				# hidushim_collection.document(entry.id).update(vars(entry))
+				# print(f"Successfully updated the entry. Entry: {entry.id}")
+				# logging.info(f"Successfully updated the entry. Entry: {entry.id}")
 			else:
 				hidushim_collection.add({**vars(entry), 'likes': 0, 'shares': 0}, entry.id)
 				print(f"Successfully created new entry. Entry: {entry.id}")

@@ -20,6 +20,12 @@ class _HomeState extends State<Home> {
   late List<Hidush> hidushim;
   late User user;
 
+  Future<void> handleRefresh() async {
+    await Future.delayed(const Duration(seconds: 1));
+    List<Hidush> newHidushim = await dbService.getHidushim(refresh: true);
+    if (newHidushim.isNotEmpty) setState(() => hidushim.insertAll(0, newHidushim));
+  }
+
   @override
   Widget build(BuildContext context) {
     final AuthenticatedUser authUser = Provider.of<AuthenticatedUser?>(context)!;
@@ -33,26 +39,29 @@ class _HomeState extends State<Home> {
           hidushim = snapshot.data![0];
           user = snapshot.data![1];
 
-          return ListView.separated(
-            padding: const EdgeInsets.all(0),
-            itemCount: hidushim.length,
-            itemBuilder: (BuildContext context, int index) {
-              return HidushCard(
-                key: ValueKey(index),
-                id: hidushim[index].id,
-                source: hidushim[index].source,
-                sourceDetails: hidushim[index].sourceDetails,
-                quote: hidushim[index].quote,
-                peroosh: hidushim[index].peroosh,
-                categories: hidushim[index].categories,
-                rabbi: hidushim[index].rabbi,
-                rabbiImage: rabbiToImage[hidushim[index].rabbi],
-                isLiked: user.likedHidushim.contains(hidushim[index].id),
-                likes: hidushim[index].likes,
-                shares: hidushim[index].shares,
-              );
-            },
-            separatorBuilder: (context, index) => const SizedBox(height: 10),
+          return RefreshIndicator(
+            onRefresh: handleRefresh,
+            child: ListView.separated(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              itemCount: hidushim.length,
+              itemBuilder: (BuildContext context, int index) {
+                return HidushCard(
+                  key: ValueKey(index),
+                  id: hidushim[index].id,
+                  source: hidushim[index].source,
+                  sourceDetails: hidushim[index].sourceDetails,
+                  quote: hidushim[index].quote,
+                  peroosh: hidushim[index].peroosh,
+                  categories: hidushim[index].categories,
+                  rabbi: hidushim[index].rabbi,
+                  rabbiImage: rabbiToImage[hidushim[index].rabbi],
+                  isLiked: user.likedHidushim.contains(hidushim[index].id),
+                  likes: hidushim[index].likes,
+                  shares: hidushim[index].shares,
+                );
+              },
+              separatorBuilder: (context, index) => const SizedBox(height: 10),
+            ),
           );
         }
       },

@@ -40,7 +40,7 @@ class _FavoritesState extends State<Favorites> {
               return const Center(child: Text("אין לך חידושים מועדפים"));
             }
             return ListView.builder(
-                padding: const EdgeInsets.all(0),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
                 itemCount: snapshot.data.length,
                 itemBuilder: (BuildContext context, int index) {
                   return HidushCard(

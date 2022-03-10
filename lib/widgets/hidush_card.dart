@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:hidush/common/utils.dart';
 import 'package:hidush/models/user.dart';
 import 'package:hidush/services/db.dart';
-import 'package:hidush/widgets/buttons/emote_button.dart';
+import 'package:like_button/like_button.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 
@@ -37,20 +37,17 @@ class HidushCard extends StatefulWidget {
 
 class _HidushCardState extends State<HidushCard> {
   DBService dbService = DBService();
-  IconData likeIcon = Icons.favorite;
 
-  void _handleLikePress() async {
+  Future<bool> _handleLikePress(bool isLiked) async {
+    log(isLiked.toString());
     final AuthenticatedUser? user = Provider.of<AuthenticatedUser?>(context, listen: false);
-    await dbService.updateFavoriteHidush(user!.uid, widget.id, !widget.isLiked);
+    await dbService.updateFavoriteHidush(user!.uid, widget.id, !isLiked);
 
-    setState(() {
-      widget.likePressed != null ? widget.likePressed!((widget.key as ValueKey).value) : null;
-      widget.isLiked = !widget.isLiked;
-      widget.isLiked ? widget.likes++ : widget.likes--;
-    });
+    widget.likePressed != null ? widget.likePressed!((widget.key as ValueKey).value) : null;
+    return !isLiked;
   }
 
-  void _handleSharedPress() async {
+  Future<bool> _handleSharedPress(bool isShared) async {
     final AuthenticatedUser? user = Provider.of<AuthenticatedUser?>(context, listen: false);
 
     await Share.share('${widget.quote} (${widget.source}) \n\n ${widget.peroosh} (${widget.rabbi})',
@@ -58,12 +55,12 @@ class _HidushCardState extends State<HidushCard> {
     await dbService.updateSharedHidush(user!.uid, widget.id);
 
     setState(() => widget.shares++);
+    return !isShared;
   }
 
   @override
   Widget build(BuildContext context) {
     log("Card rendered. No: ${widget.id}");
-    likeIcon = widget.isLiked ? Icons.favorite : Icons.favorite_border;
 
     return Card(
       key: widget.key,
@@ -90,12 +87,15 @@ class _HidushCardState extends State<HidushCard> {
                 ),
                 Column(
                   children: [
-                    Image(
-                      image: AssetImage(widget.rabbiImage),
-                      height: 45,
-                      width: 45,
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(25),
+                      child: Image(
+                        image: AssetImage(widget.rabbiImage),
+                        height: 45,
+                        width: 45,
+                      ),
                     ),
-                    Text(widget.rabbi, style: const TextStyle(fontSize: 8)),
+                    Text(widget.rabbi, style: const TextStyle(fontSize: 12)),
                   ],
                 )
               ],
@@ -129,17 +129,29 @@ class _HidushCardState extends State<HidushCard> {
                       ))
                 ]),
                 Row(
+                  textDirection: TextDirection.ltr,
                   children: [
-                    EmoteButton(
-                      text: widget.shares,
-                      icon: Icons.share,
-                      onPress: _handleSharedPress,
+                    LikeButton(
+                      padding: const EdgeInsets.only(right: 10),
+                      isLiked: widget.isLiked,
+                      countPostion: CountPostion.left,
+                      likeBuilder: ((isLiked) => Icon(
+                            isLiked ? Icons.favorite : Icons.favorite_border,
+                            color: isLiked ? Colors.red[300] : Colors.grey,
+                          )),
+                      likeCount: widget.likes,
+                      onTap: _handleLikePress,
                     ),
-                    const Padding(padding: EdgeInsets.only(right: 15)),
-                    EmoteButton(
-                      text: widget.likes,
-                      icon: likeIcon,
-                      onPress: _handleLikePress,
+                    LikeButton(
+                      countPostion: CountPostion.left,
+                      likeBuilder: ((isLiked) => const Icon(Icons.share, color: Colors.grey)),
+                      // countBuilder: (int? count, bool isLiked, String text) {
+                      //   // log(count.toString());
+                      //   // widget.shares = count != null ? count++ : widget.shares;
+                      //   return Text("hello");
+                      // },
+                      likeCount: widget.shares,
+                      onTap: _handleSharedPress,
                     ),
                   ],
                 )

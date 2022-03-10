@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hidush/common/const.dart';
 import 'package:hidush/models/user.dart';
 import 'package:hidush/services/auth.dart';
 import 'package:provider/provider.dart';
@@ -34,7 +37,7 @@ class _PersonalState extends State<Personal> {
               onPressed: (value) {
                 Clipboard.setData(ClipboardData(text: '${user?.email}'));
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content: Text('המייל מועתק'),
+                  content: Text('הועתק'),
                 ));
               },
             ),
@@ -49,11 +52,54 @@ class _PersonalState extends State<Personal> {
           title: const Text('הגדרות'),
           tiles: <SettingsTile>[
             SettingsTile.switchTile(
-              leading: const Icon(Icons.settings),
-              title: const Text('סתם לצחוקים'),
+              leading: const Icon(Icons.invert_colors),
+              title: const Text('מצב לילה'),
               onPressed: (value) async => null,
               initialValue: switchState,
               onToggle: (bool value) => setState(() => switchState = !switchState),
+            ),
+          ],
+        ),
+        SettingsSection(
+          title: const Text('אודות'),
+          tiles: <SettingsTile>[
+            SettingsTile.navigation(
+              leading: const Icon(Icons.contact_support),
+              title: const Text('צור קשר'),
+              value: Text(contactUsEmail),
+              onPressed: (value) {
+                Clipboard.setData(ClipboardData(text: contactUsEmail));
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text('הועתק'),
+                ));
+              },
+            ),
+            SettingsTile.navigation(
+              leading: const Icon(Icons.balance),
+              title: const Text('תקנון'),
+              onPressed: (value) {
+                showModalBottomSheet(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                    context: context,
+                    builder: (BuildContext builder) {
+                      return SingleChildScrollView(
+                        child: FutureBuilder(
+                          future: rootBundle.loadString('assets/texts/terms.txt'),
+                          builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+                            return Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Text(snapshot.data.toString()),
+                            );
+                          },
+                        ),
+                      );
+                    });
+              },
+            ),
+            SettingsTile(
+              leading: const Icon(Icons.smart_toy),
+              title: const Text('גירסא'),
+              value: Text(version),
             ),
           ],
         ),

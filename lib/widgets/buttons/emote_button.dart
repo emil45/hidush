@@ -1,6 +1,9 @@
 // Like + Share
 
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:like_button/like_button.dart';
 
 class EmoteButton extends StatelessWidget {
   final int text;
@@ -11,6 +14,10 @@ class EmoteButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return LikeButton(likeBuilder: (bool isLiked) {
+      log(isLiked.toString());
+      return Icon(icon, color: isLiked ? Colors.red : Colors.grey);
+    });
     return InkWell(
       splashFactory: NoSplash.splashFactory,
       onTap: onPress,

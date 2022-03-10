@@ -13,6 +13,8 @@ Hidush _$HidushFromJson(Map<String, dynamic> json) => Hidush(
       quote: json['quote'] as String,
       peroosh: json['peroosh'] as String,
       rabbi: json['rabbi'] as String,
+      lastUpdate:
+          const TimestampConverter().fromJson(json['lastUpdate'] as Timestamp),
       categories: (json['categories'] as List<dynamic>)
           .map((e) => e as String)
           .toList(),
@@ -30,4 +32,5 @@ Map<String, dynamic> _$HidushToJson(Hidush instance) => <String, dynamic>{
       'categories': instance.categories,
       'likes': instance.likes,
       'shares': instance.shares,
+      'lastUpdate': const TimestampConverter().toJson(instance.lastUpdate),
     };
