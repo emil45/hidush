@@ -38,23 +38,32 @@ class HidushCard extends StatefulWidget {
 class _HidushCardState extends State<HidushCard> {
   DBService dbService = DBService();
 
-  Future<bool> _handleLikePress(bool isLiked) async {
-    log(isLiked.toString());
+  Future<void> _updateLikeReferences(bool isLiked) async {
     final AuthenticatedUser? user = Provider.of<AuthenticatedUser?>(context, listen: false);
     await dbService.updateFavoriteHidush(user!.uid, widget.id, !isLiked);
-
+    widget.isLiked = !isLiked;
     widget.likePressed != null ? widget.likePressed!((widget.key as ValueKey).value) : null;
+  }
+
+  Future<void> _updateShareRefrences() async {
+    final AuthenticatedUser? user = Provider.of<AuthenticatedUser?>(context, listen: false);
+    await dbService.updateSharedHidush(user!.uid, widget.id);
+  }
+
+  Future<bool> _handleLikePress(bool isLiked) async {
+    log(isLiked.toString());
+    _updateLikeReferences(isLiked);
     return !isLiked;
   }
 
   Future<bool> _handleSharedPress(bool isShared) async {
-    final AuthenticatedUser? user = Provider.of<AuthenticatedUser?>(context, listen: false);
+    // final AuthenticatedUser? user = Provider.of<AuthenticatedUser?>(context, listen: false);
 
     await Share.share('${widget.quote} (${widget.source}) \n\n ${widget.peroosh} (${widget.rabbi})',
         subject: 'חידוש מעניין מחידוש');
-    await dbService.updateSharedHidush(user!.uid, widget.id);
+    // await dbService.updateSharedHidush(user!.uid, widget.id);
 
-    setState(() => widget.shares++);
+    _updateShareRefrences();
     return !isShared;
   }
 
@@ -143,13 +152,17 @@ class _HidushCardState extends State<HidushCard> {
                       onTap: _handleLikePress,
                     ),
                     LikeButton(
+                      circleColor: CircleColor(
+                        start: Colors.grey[200]!,
+                        end: Colors.grey[400]!,
+                      ),
+                      bubblesColor: BubblesColor(
+                        dotPrimaryColor: Colors.grey[600]!,
+                        dotSecondaryColor: Colors.grey[200]!,
+                      ),
+                      isLiked: null,
                       countPostion: CountPostion.left,
                       likeBuilder: ((isLiked) => const Icon(Icons.share, color: Colors.grey)),
-                      // countBuilder: (int? count, bool isLiked, String text) {
-                      //   // log(count.toString());
-                      //   // widget.shares = count != null ? count++ : widget.shares;
-                      //   return Text("hello");
-                      // },
                       likeCount: widget.shares,
                       onTap: _handleSharedPress,
                     ),

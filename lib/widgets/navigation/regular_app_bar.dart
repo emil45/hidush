@@ -8,14 +8,7 @@ class RegularAppBar extends AppBar {
   RegularAppBar({Key? key, required this.titleText, required this.context})
       : super(
           key: key,
-          actions: [
-            IconButton(
-              onPressed: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content: Text('כלום'),
-              )),
-              icon: const Icon(Icons.adb, color: Colors.black),
-            )
-          ],
+          actions: [],
           title: Text(
             titleText,
             style: const TextStyle(

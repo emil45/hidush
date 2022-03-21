@@ -5,7 +5,7 @@ import 'package:hidush/common/utils.dart';
 import 'package:hidush/models/hidush.dart';
 import 'package:hidush/models/user.dart';
 import 'package:hidush/services/db.dart';
-import 'package:hidush/widgets/hidush_card.dart';
+import 'package:hidush/widgets/hidush/hidush_card.dart';
 import 'package:provider/provider.dart';
 
 class Favorites extends StatefulWidget {
@@ -20,6 +20,7 @@ class _FavoritesState extends State<Favorites> {
   late List<Hidush> hidushim;
 
   void handleLikePress(String index) {
+    log(index);
     setState(() {
       hidushim.removeAt(int.parse(index));
     });
@@ -37,7 +38,29 @@ class _FavoritesState extends State<Favorites> {
           } else {
             hidushim = snapshot.data!;
             if (hidushim.isEmpty) {
-              return const Center(child: Text("אין לך חידושים מועדפים"));
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                // crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    "assets/images/no_favorites.png",
+                    width: 200,
+                    height: 200,
+                  ),
+                  const Text(
+                    "אין חידושים מועדפים",
+                    style: TextStyle(fontSize: 24),
+                    textAlign: TextAlign.center,
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 10),
+                    child: Text(
+                      "הכול בסדר, כשתפגוש חידוש שמצע חן בעיניך, \n תוכל ללחוץ על ה-♡ והוא יישמר פה",
+                      textAlign: TextAlign.center,
+                    ),
+                  )
+                ],
+              );
             }
             return ListView.builder(
                 padding: const EdgeInsets.symmetric(horizontal: 10),

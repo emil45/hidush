@@ -11,12 +11,12 @@ class ScrollableAppBar extends SliverAppBar {
       : super(
           key: key,
           actions: [
-            IconButton(
-              onPressed: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content: Text('כלום'),
-              )),
-              icon: const Icon(Icons.adb, color: Colors.black),
-            )
+            // IconButton(
+            //   onPressed: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            //     content: Text('כלום'),
+            //   )),
+            //   icon: const Icon(Icons.adb, color: Colors.black),
+            // )
           ],
           forceElevated: true,
           floating: true,

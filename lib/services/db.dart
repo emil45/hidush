@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hidush/models/hidush.dart';
 import 'package:hidush/models/user.dart';
 
+const int hidushLimit = 10;
+
 class DBService {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   CollectionReference users = FirebaseFirestore.instance.collection('users');
@@ -30,6 +32,7 @@ class DBService {
 
   Future<User> getUser(String userUid) async {
     DocumentSnapshot snapshot = await users.doc(userUid).get();
+    log('Get user data: ${snapshot.data().toString()}');
     return User.fromJson(snapshot.data() as Map<String, dynamic>);
   }
 
@@ -68,7 +71,7 @@ class DBService {
 
     if (favoriteHidushim.isNotEmpty) {
       QuerySnapshot query = await hidushim.where(FieldPath.documentId, whereIn: favoriteHidushim).get();
-      return query.docs.map((e) => Hidush.fromJson(e.data() as Map<String, dynamic>)).toList();
+      return query.docs.reversed.map((e) => Hidush.fromJson(e.data() as Map<String, dynamic>)).toList();
     } else {
       return [];
     }
@@ -77,13 +80,18 @@ class DBService {
   Future<List<Hidush>> getHidushim({bool? refresh}) async {
     QuerySnapshot snapshot;
     if (refresh == null) {
-      snapshot = await hidushim.orderBy('lastUpdate', descending: true).limit(10).get();
+      snapshot = await hidushim.limit(hidushLimit).orderBy('lastUpdate', descending: true).get();
       mostRecentHidush = snapshot.docs[0];
     } else {
-      snapshot =
-          await hidushim.orderBy('lastUpdate', descending: true).endBeforeDocument(mostRecentHidush).limit(10).get();
+      snapshot = await hidushim
+          .limit(hidushLimit)
+          .orderBy('lastUpdate', descending: true)
+          .endBeforeDocument(mostRecentHidush)
+          .get();
       snapshot.docs.isNotEmpty ? mostRecentHidush = snapshot.docs[0] : null;
     }
+
+    log('Most recent hidush: ${mostRecentHidush.data().toString()}');
 
     return snapshot.docs.map((e) => Hidush.fromJson(e.data() as Map<String, dynamic>)).toList();
   }

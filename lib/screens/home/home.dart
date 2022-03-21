@@ -5,7 +5,7 @@ import 'package:hidush/common/utils.dart';
 import 'package:hidush/models/hidush.dart';
 import 'package:hidush/models/user.dart';
 import 'package:hidush/services/db.dart';
-import 'package:hidush/widgets/hidush_card.dart';
+import 'package:hidush/widgets/hidush/hidush_card.dart';
 import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
