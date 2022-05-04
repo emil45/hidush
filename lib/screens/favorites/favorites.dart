@@ -62,8 +62,9 @@ class _FavoritesState extends State<Favorites> {
                 ],
               );
             }
-            return ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
+            return ListView.separated(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                separatorBuilder: (context, index) => const SizedBox(height: 24),
                 itemCount: snapshot.data.length,
                 itemBuilder: (BuildContext context, int index) {
                   return HidushCard(

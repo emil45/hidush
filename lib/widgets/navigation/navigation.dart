@@ -17,7 +17,7 @@ class _NavigationState extends State<Navigation> {
   int _pageIndex = 0;
 
   final Map<int, dynamic> _pages = {
-    0: {'widget': Home(), 'appBarTitle': "חידוש", 'scroll': true},
+    0: {'widget': Home(), 'appBarTitle': "חידושים", 'scroll': true},
     1: {'widget': const Text('קצרים'), 'appBarTitle': "קצרים", 'scroll': false},
     2: {'widget': const Favorites(), 'appBarTitle': "מועדפים", 'scroll': true},
     3: {'widget': const Personal(), 'appBarTitle': "הגדרות", 'scroll': false},

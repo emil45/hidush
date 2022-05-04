@@ -42,7 +42,7 @@ class _HomeState extends State<Home> {
           return RefreshIndicator(
             onRefresh: handleRefresh,
             child: ListView.separated(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               itemCount: hidushim.length,
               itemBuilder: (BuildContext context, int index) {
                 return HidushCard(
@@ -60,7 +60,7 @@ class _HomeState extends State<Home> {
                   shares: hidushim[index].shares,
                 );
               },
-              separatorBuilder: (context, index) => const SizedBox(height: 10),
+              separatorBuilder: (context, index) => const SizedBox(height: 24),
             ),
           );
         }
