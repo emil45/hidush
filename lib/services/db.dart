@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:hidush/common/utils.dart';
 import 'package:hidush/models/hidush.dart';
 import 'package:hidush/models/user.dart';
 
@@ -10,7 +11,8 @@ class DBService {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   CollectionReference users = FirebaseFirestore.instance.collection('users');
   CollectionReference hidushim = FirebaseFirestore.instance.collection('hidushim');
-  late DocumentSnapshot mostRecentHidush;
+  DocumentSnapshot? newestHidush;
+  DocumentSnapshot? oldestHidush;
 
   Future<void> upsertUser(AuthenticatedUser user) async {
     DocumentSnapshot snapShot = await users.doc(user.uid).get();
@@ -77,21 +79,22 @@ class DBService {
     }
   }
 
-  Future<List<Hidush>> getHidushim({bool? refresh}) async {
+  Future<List<Hidush>> getHidushim({bool? refresh, bool? pagination}) async {
     QuerySnapshot snapshot;
-    if (refresh == null) {
-      snapshot = await hidushim.limit(hidushLimit).orderBy('lastUpdate', descending: true).get();
-      mostRecentHidush = snapshot.docs[0];
+    Query query = hidushim.limit(hidushLimit).orderBy('lastUpdate', descending: true);
+
+    if (refresh == true) {
+      snapshot = await query.endBeforeDocument(newestHidush!).get();
+    } else if (pagination == true) {
+      snapshot = await query.startAfterDocument(oldestHidush!).get();
     } else {
-      snapshot = await hidushim
-          .limit(hidushLimit)
-          .orderBy('lastUpdate', descending: true)
-          .endBeforeDocument(mostRecentHidush)
-          .get();
-      snapshot.docs.isNotEmpty ? mostRecentHidush = snapshot.docs[0] : null;
+      snapshot = await query.get();
     }
 
-    log('Most recent hidush: ${mostRecentHidush.data().toString()}');
+    if (snapshot.docs.isNotEmpty && pagination != true) newestHidush = snapshot.docs.first;
+    if (snapshot.docs.isNotEmpty) oldestHidush = snapshot.docs.last;
+
+    log('[DEBUG] NewestHidush: ${newestHidush?.id}. OldestHidush: ${oldestHidush?.id}');
 
     return snapshot.docs.map((e) => Hidush.fromJson(e.data() as Map<String, dynamic>)).toList();
   }

@@ -1,10 +1,14 @@
 import 'dart:developer';
+import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:hidush/common/utils.dart';
 import 'package:hidush/models/user.dart';
 import 'package:hidush/services/db.dart';
+import 'package:hidush/widgets/buttons/glass_chip.dart';
+import 'package:hidush/widgets/buttons/rabbi.dart';
 import 'package:like_button/like_button.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
@@ -38,8 +42,13 @@ class HidushCard extends StatefulWidget {
 
 class _HidushCardState extends State<HidushCard> {
   DBService dbService = DBService();
-  final String upQuote = 'assets/symbols/up_quote.svg';
-  final String downQuote = 'assets/symbols/down_quote.svg';
+  final List<List<Color>> cardsColors = [
+    const [Color(0xFFB8B8FF), Color(0xFFB8EEFF)],
+    const [Color(0xFFFFDAB8), Color(0xFFFFE7C2)],
+    const [Color(0xFFB8FFDD), Color(0xFFC2F4FF)],
+    const [Color(0xFFB9FFB8), Color(0xFFFAFFC2)],
+    const [Color(0xFFB8B8FF), Color(0xFFC2C8FF)]
+  ];
 
   Future<void> _updateLikeReferences(bool isLiked) async {
     final AuthenticatedUser? user = Provider.of<AuthenticatedUser?>(context, listen: false);
@@ -77,13 +86,11 @@ class _HidushCardState extends State<HidushCard> {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Color(0xFFB8B8FF),
-            Color(0xFFE4C2FF),
-          ],
+          colors: cardsColors[math.Random().nextInt(cardsColors.length)],
+          // colors: widget.categories.contains('גמרא') ? cardsColors[4] : cardsColors[0],
         ),
       ),
       child: Padding(
@@ -93,7 +100,7 @@ class _HidushCardState extends State<HidushCard> {
             const Image(image: AssetImage('assets/images/quote.png')),
             Text(
               widget.quote,
-              style: const TextStyle(fontSize: 24, fontFamily: 'NotoSansHebrew'),
+              style: const TextStyle(fontSize: 24, fontFamily: 'NotoSansHebrew', fontWeight: FontWeight.w400),
               textAlign: TextAlign.center,
             ),
             Padding(
@@ -102,13 +109,8 @@ class _HidushCardState extends State<HidushCard> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    widget.source,
-                    style: const TextStyle(fontSize: 10, fontFamily: 'NotoSansHebrew', fontWeight: FontWeight.w600),
-                    textAlign: TextAlign.center,
-                  ),
-                  Text(
-                    ", " + widget.sourceDetails,
-                    style: const TextStyle(fontSize: 10, fontFamily: 'NotoSansHebrew', fontWeight: FontWeight.w600),
+                    widget.source + ", " + widget.sourceDetails,
+                    style: const TextStyle(fontSize: 10, fontFamily: 'NotoSansHebrew', fontWeight: FontWeight.w800),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -119,29 +121,12 @@ class _HidushCardState extends State<HidushCard> {
               child: Text(
                 widget.peroosh,
                 textAlign: TextAlign.center,
+                style: const TextStyle(fontFamily: 'NotoSansHebrew', fontWeight: FontWeight.w400),
               ),
             ),
             Padding(
               padding: const EdgeInsets.only(bottom: 16),
-              child: Row(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(25),
-                    child: Image(
-                      image: AssetImage(widget.rabbiImage),
-                      height: 25,
-                      width: 25,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: Text(
-                      widget.rabbi,
-                      style: const TextStyle(fontSize: 12, fontFamily: 'NotoSansHebrew'),
-                    ),
-                  ),
-                ],
-              ),
+              child: Rabbi(rabbi: widget.rabbi, rabbiImage: widget.rabbiImage),
             ),
             Container(
               padding: const EdgeInsets.symmetric(vertical: 16),
@@ -158,32 +143,14 @@ class _HidushCardState extends State<HidushCard> {
                         left: BorderSide(color: Colors.white, width: 0.2),
                       ),
                     ),
-                    width: 200,
+                    width: 180,
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         children: [
                           ...widget.categories.map((labelText) => Padding(
                                 padding: const EdgeInsets.only(left: 10),
-                                child: ClipRect(
-                                  child: BackdropFilter(
-                                    filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                                      decoration: BoxDecoration(
-                                        borderRadius: const BorderRadius.all(Radius.circular(10)),
-                                        color: labelsColors[labelText] ?? Colors.grey.shade200.withOpacity(0.3),
-                                      ),
-                                      child: Center(
-                                        child: Text(
-                                          labelText,
-                                          style: const TextStyle(
-                                              fontFamily: 'NotoSansHebrew', fontWeight: FontWeight.w300),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
+                                child: GlassChip(text: labelText),
                               ))
                         ],
                       ),

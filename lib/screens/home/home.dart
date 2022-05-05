@@ -17,13 +17,46 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   DBService dbService = DBService();
-  late List<Hidush> hidushim;
+  List<Hidush> hidushim = [];
+  final scrollController = ScrollController();
   late User user;
+
+  @override
+  void initState() {
+    super.initState();
+
+    fetchHidushim(pagination: false);
+
+    scrollController.addListener(() {
+      if (scrollController.offset >= (scrollController.position.maxScrollExtent)) {
+        fetchHidushim(pagination: true);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
+  }
+
+  Future fetchHidushim({bool? pagination, bool? refresh}) async {
+    List<Hidush> newHidushim;
+
+    newHidushim = await dbService.getHidushim(pagination: pagination, refresh: refresh);
+
+    setState(() {
+      if (refresh == true) {
+        hidushim.insertAll(0, newHidushim);
+      } else {
+        hidushim.addAll(newHidushim);
+      }
+    });
+  }
 
   Future<void> handleRefresh() async {
     await Future.delayed(const Duration(seconds: 1));
-    List<Hidush> newHidushim = await dbService.getHidushim(refresh: true);
-    if (newHidushim.isNotEmpty) setState(() => hidushim.insertAll(0, newHidushim));
+    await fetchHidushim(refresh: true);
   }
 
   @override
@@ -31,19 +64,20 @@ class _HomeState extends State<Home> {
     final AuthenticatedUser authUser = Provider.of<AuthenticatedUser?>(context)!;
 
     return FutureBuilder(
-      future: Future.wait([dbService.getHidushim(), dbService.getUser(authUser.uid)]),
+      future: Future.wait([dbService.getUser(authUser.uid)]),
       builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
-        if (!snapshot.hasData) {
+        if (hidushim.isEmpty) {
           return const Center(child: CircularProgressIndicator());
         } else {
-          hidushim = snapshot.data![0];
-          user = snapshot.data![1];
+          // hidushim = snapshot.data![0];
+          user = snapshot.data![0];
 
           return RefreshIndicator(
             onRefresh: handleRefresh,
             child: ListView.separated(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               itemCount: hidushim.length,
+              controller: scrollController,
               itemBuilder: (BuildContext context, int index) {
                 return HidushCard(
                   key: ValueKey(index),
