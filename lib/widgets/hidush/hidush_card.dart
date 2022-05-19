@@ -1,14 +1,12 @@
 import 'dart:developer';
 import 'dart:math' as math;
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:hidush/common/utils.dart';
 import 'package:hidush/models/user.dart';
 import 'package:hidush/services/db.dart';
 import 'package:hidush/widgets/buttons/glass_chip.dart';
 import 'package:hidush/widgets/buttons/rabbi.dart';
+import 'package:hidush/widgets/hidush/hidush_footer.dart';
 import 'package:like_button/like_button.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
@@ -42,13 +40,6 @@ class HidushCard extends StatefulWidget {
 
 class _HidushCardState extends State<HidushCard> {
   DBService dbService = DBService();
-  final List<List<Color>> cardsColors = [
-    const [Color(0xFFB8B8FF), Color(0xFFB8EEFF)],
-    const [Color(0xFFFFDAB8), Color(0xFFFFE7C2)],
-    const [Color(0xFFB8FFDD), Color(0xFFC2F4FF)],
-    const [Color(0xFFB9FFB8), Color(0xFFFAFFC2)],
-    const [Color(0xFFB8B8FF), Color(0xFFC2C8FF)]
-  ];
 
   Future<void> _updateLikeReferences(bool isLiked) async {
     final AuthenticatedUser? user = Provider.of<AuthenticatedUser?>(context, listen: false);
@@ -68,7 +59,7 @@ class _HidushCardState extends State<HidushCard> {
     return !isLiked;
   }
 
-  Future<bool> _handleSharedPress(bool isShared) async {
+  Future<bool> _handleSharePress(bool isShared) async {
     // final AuthenticatedUser? user = Provider.of<AuthenticatedUser?>(context, listen: false);
 
     await Share.share('${widget.quote} (${widget.source}) \n\n ${widget.peroosh} (${widget.rabbi})',
@@ -85,22 +76,27 @@ class _HidushCardState extends State<HidushCard> {
 
     return Container(
       decoration: BoxDecoration(
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: cardsColors[math.Random().nextInt(cardsColors.length)],
-          // colors: widget.categories.contains('גמרא') ? cardsColors[4] : cardsColors[0],
-        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            offset: const Offset(0, 2.5),
+            blurRadius: 4,
+          )
+        ],
       ),
       child: Padding(
-        padding: const EdgeInsets.only(top: 20.0, left: 20, right: 20),
+        padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
         child: Column(
           children: [
-            const Image(image: AssetImage('assets/images/quote.png')),
+            const Padding(
+              padding: EdgeInsets.only(bottom: 8.0),
+              child: Image(image: AssetImage('assets/images/quote.png')),
+            ),
             Text(
               widget.quote,
-              style: const TextStyle(fontSize: 24, fontFamily: 'NotoSansHebrew', fontWeight: FontWeight.w400),
+              style: const TextStyle(fontSize: 22, fontFamily: 'NotoSansHebrew', fontWeight: FontWeight.w400),
               textAlign: TextAlign.center,
             ),
             Padding(
@@ -110,7 +106,12 @@ class _HidushCardState extends State<HidushCard> {
                 children: [
                   Text(
                     widget.source + ", " + widget.sourceDetails,
-                    style: const TextStyle(fontSize: 10, fontFamily: 'NotoSansHebrew', fontWeight: FontWeight.w800),
+                    style: const TextStyle(
+                      fontSize: 10,
+                      fontFamily: 'NotoSansHebrew',
+                      fontWeight: FontWeight.w800,
+                      color: Colors.grey,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -121,76 +122,25 @@ class _HidushCardState extends State<HidushCard> {
               child: Text(
                 widget.peroosh,
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontFamily: 'NotoSansHebrew', fontWeight: FontWeight.w400),
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontFamily: 'NotoSansHebrew',
+                  fontWeight: FontWeight.w400,
+                ),
               ),
             ),
             Padding(
               padding: const EdgeInsets.only(bottom: 16),
               child: Rabbi(rabbi: widget.rabbi, rabbiImage: widget.rabbiImage),
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              decoration: const BoxDecoration(
-                border: Border(
-                  top: BorderSide(color: Colors.white, width: 0.2),
-                ),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    decoration: const BoxDecoration(
-                      border: Border(
-                        left: BorderSide(color: Colors.white, width: 0.2),
-                      ),
-                    ),
-                    width: 180,
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          ...widget.categories.map((labelText) => Padding(
-                                padding: const EdgeInsets.only(left: 10),
-                                child: GlassChip(text: labelText),
-                              ))
-                        ],
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        LikeButton(
-                          circleColor: CircleColor(
-                            start: Colors.grey[200]!,
-                            end: Colors.grey[400]!,
-                          ),
-                          bubblesColor: BubblesColor(
-                            dotPrimaryColor: Colors.grey[600]!,
-                            dotSecondaryColor: Colors.grey[200]!,
-                          ),
-                          isLiked: null,
-                          countPostion: CountPostion.left,
-                          likeBuilder: ((isLiked) => const Icon(Icons.share, color: Colors.grey)),
-                          likeCount: widget.shares,
-                          onTap: _handleSharedPress,
-                        ),
-                        LikeButton(
-                          isLiked: widget.isLiked,
-                          countPostion: CountPostion.left,
-                          likeBuilder: ((isLiked) => Icon(
-                                isLiked ? Icons.favorite : Icons.favorite_border,
-                                color: isLiked ? Colors.red[300] : Colors.grey,
-                              )),
-                          likeCount: widget.likes,
-                          onTap: _handleLikePress,
-                        ),
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            )
+            HidushFooter(
+              categories: widget.categories,
+              isLiked: widget.isLiked,
+              likes: widget.likes,
+              shares: widget.shares,
+              handleLikePress: _handleLikePress,
+              handleSharePress: _handleSharePress,
+            ),
           ],
         ),
       ),

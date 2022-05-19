@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:hidush/common/utils.dart';
 import 'package:hidush/models/hidush.dart';
@@ -19,8 +17,14 @@ class _FavoritesState extends State<Favorites> {
   DBService dbService = DBService();
   late List<Hidush> hidushim;
 
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
   void handleLikePress(String index) {
-    log(index);
     setState(() {
       hidushim.removeAt(int.parse(index));
     });
@@ -36,7 +40,7 @@ class _FavoritesState extends State<Favorites> {
           if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
           } else {
-            hidushim = snapshot.data!;
+            hidushim = snapshot.data;
             if (hidushim.isEmpty) {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -61,11 +65,13 @@ class _FavoritesState extends State<Favorites> {
                   )
                 ],
               );
-            }
-            return ListView.separated(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+            } else {
+              hidushim = hidushim.reversed.toList();
+
+              return ListView.separated(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 separatorBuilder: (context, index) => const SizedBox(height: 24),
-                itemCount: snapshot.data.length,
+                itemCount: hidushim.length,
                 itemBuilder: (BuildContext context, int index) {
                   return HidushCard(
                     key: ValueKey(index.toString()),
@@ -82,7 +88,9 @@ class _FavoritesState extends State<Favorites> {
                     shares: hidushim[index].shares,
                     likePressed: handleLikePress,
                   );
-                });
+                },
+              );
+            }
           }
         });
   }

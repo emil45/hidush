@@ -1,9 +1,9 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:hidush/common/utils.dart';
 import 'package:hidush/models/hidush.dart';
 import 'package:hidush/models/user.dart';
+import 'package:quiver/iterables.dart';
 
 const int hidushLimit = 10;
 
@@ -70,10 +70,24 @@ class DBService {
   Future<List<Hidush>> getUserFavoriteHidushim(String userUid) async {
     DocumentSnapshot snapshot = await users.doc(userUid).get();
     List favoriteHidushim = snapshot['likedHidushim'];
+    final chunks = partition(favoriteHidushim, 10);
 
     if (favoriteHidushim.isNotEmpty) {
-      QuerySnapshot query = await hidushim.where(FieldPath.documentId, whereIn: favoriteHidushim).get();
-      return query.docs.reversed.map((e) => Hidush.fromJson(e.data() as Map<String, dynamic>)).toList();
+      final List querySnapshots = await Future.wait(chunks.map((chunk) {
+        Query itemsQuery = hidushim.where(FieldPath.documentId, whereIn: chunk);
+        return itemsQuery.get();
+      }).toList());
+
+      final docs = querySnapshots.expand((element) => element.docs);
+      return docs.map((doc) => Hidush.fromJson(doc.data())).toList();
+      // log(docs.toString());
+
+      // return await Stream.fromIterable(querySnapshots).flatMap((qs) => Stream.fromIterable(qs.docs)).toList();
+
+      // QuerySnapshot query = await hidushim.where(FieldPath.documentId, whereIn: favoriteHidushim).get();
+      // return querySnapshots.reversed
+      //     .map((querySnapshot) => Hidush.fromJson(querySnapshot.data() as Map<String, dynamic>))
+      //     .toList();
     } else {
       return [];
     }

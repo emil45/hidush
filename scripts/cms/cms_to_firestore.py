@@ -35,14 +35,29 @@ hidushim_collection: CollectionReference = db.collection('hidushim')
 
 client = Client(space_id=SPACE_ID, access_token=CMS_API_KEY)
 
+def seriazlie_string_entry(string_entry: dict) -> str:
+	"""
+	Serialize to formatted string, for example in case there is BOLD characters.
+	Bold characters will be prefixed with __ and postfixed with __.
+	"""
+	formatted_string = ""
+
+	for string_content in string_entry['content'][0]['content']:
+		if any(mark['type'] == "bold" for mark in string_content['marks']):
+			formatted_string += f"*{string_content['value']}*"
+		else:
+			formatted_string += string_content['value']
+	
+	return formatted_string
+
 
 def get_entries() -> List[Hidush]:
 	entries: List[Entry] = client.entries({'content_type': 'hidush', 'locale': 'he-IL'})
 	return [
-		Hidush(id=entry.id, quote=entry.quote['content'][0]['content'][0]['value'],
-		       peroosh=entry.peroosh['content'][0]['content'][0]['value'],
+		Hidush(id=entry.id, quote=seriazlie_string_entry(entry.quote),
+		       peroosh=seriazlie_string_entry(entry.peroosh),
 		       source=entry.source, sourceDetails=entry.source_details, 
-					 rabbi=entry.rabbi, categories=entry.categories, lastUpdate=datetime.utcnow())
+					 rabbi=entry.rabbi, categories=entry.categories, lastUpdate=entry.updated_at)
 		for entry in entries
 	]
 
@@ -51,10 +66,9 @@ def upsert_entries(entries: List[Hidush]):
 	for entry in entries:
 		try:
 			if hidushim_collection.document(entry.id).get().exists:
-				print(f"Updates not supported yet. Entry: {entry.id}")
-				# hidushim_collection.document(entry.id).update(vars(entry))
-				# print(f"Successfully updated the entry. Entry: {entry.id}")
-				# logging.info(f"Successfully updated the entry. Entry: {entry.id}")
+				hidushim_collection.document(entry.id).update(vars(entry))
+				print(f"Successfully updated the entry. Entry: {entry.id}")
+				logging.info(f"Successfully updated the entry. Entry: {entry.id}")
 			else:
 				hidushim_collection.add({**vars(entry), 'likes': 0, 'shares': 0}, entry.id)
 				print(f"Successfully created new entry. Entry: {entry.id}")

@@ -82,16 +82,33 @@ class _PersonalState extends State<Personal> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                     context: context,
                     builder: (BuildContext builder) {
-                      return SingleChildScrollView(
-                        child: FutureBuilder(
-                          future: rootBundle.loadString('assets/texts/terms.txt'),
-                          builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-                            return Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: Text(snapshot.data.toString()),
-                            );
-                          },
-                        ),
+                      return Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            child: Container(
+                              height: 4,
+                              width: 60,
+                              decoration: BoxDecoration(
+                                color: Colors.grey.withOpacity(0.6),
+                                borderRadius: const BorderRadius.all(Radius.circular(20)),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: SingleChildScrollView(
+                              child: FutureBuilder(
+                                future: rootBundle.loadString('assets/texts/terms.txt'),
+                                builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+                                  return Padding(
+                                    padding: const EdgeInsets.all(16),
+                                    child: Text(snapshot.data.toString()),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
                       );
                     });
               },

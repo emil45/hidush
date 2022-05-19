@@ -11,17 +11,16 @@ class GlassChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(15),
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 20.0, sigmaY: 30.0),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.white.withOpacity(0.1)),
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Colors.white.withOpacity(0.2), Colors.white.withOpacity(0.1)],
+              colors: [Colors.pink.withOpacity(0.1), Colors.purple.withOpacity(0.1)],
             ),
           ),
           child: Text(

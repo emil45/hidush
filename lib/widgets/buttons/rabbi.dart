@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 
 class Rabbi extends StatelessWidget {
@@ -21,9 +19,20 @@ class Rabbi extends StatelessWidget {
             context: context,
             builder: (BuildContext builder) {
               return Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12.0),
+                      child: Container(
+                        height: 4,
+                        width: 60,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.withOpacity(0.6),
+                          borderRadius: const BorderRadius.all(Radius.circular(20)),
+                        ),
+                      ),
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
@@ -42,8 +51,8 @@ class Rabbi extends StatelessWidget {
                           borderRadius: BorderRadius.circular(15),
                           child: Image(
                             image: AssetImage(rabbiImage),
-                            height: 100,
-                            width: 100,
+                            height: 120,
+                            width: 120,
                           ),
                         ),
                       ],
@@ -67,8 +76,8 @@ class Rabbi extends StatelessWidget {
             borderRadius: BorderRadius.circular(25),
             child: Image(
               image: AssetImage(rabbiImage),
-              height: 25,
-              width: 25,
+              height: 30,
+              width: 30,
             ),
           ),
           Padding(

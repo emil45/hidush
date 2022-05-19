@@ -4,8 +4,7 @@ class BottomNavBar extends StatelessWidget {
   final int pageIndex;
   final Function(int) onTap;
 
-  const BottomNavBar({Key? key, required this.pageIndex, required this.onTap})
-      : super(key: key);
+  const BottomNavBar({Key? key, required this.pageIndex, required this.onTap}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,12 +22,18 @@ class BottomNavBar extends StatelessWidget {
           ),
           label: "בית",
         ),
-        BottomNavigationBarItem(
-          icon: Icon(
-            Icons.video_camera_front,
-          ),
-          label: "קצרים",
-        ),
+        // BottomNavigationBarItem(
+        //   icon: Icon(
+        //     Icons.video_camera_front,
+        //   ),
+        //   label: "קצרים",
+        // ),
+        // BottomNavigationBarItem(
+        //   icon: Icon(
+        //     Icons.search,
+        //   ),
+        //   label: "חיפוש",
+        // ),
         BottomNavigationBarItem(
           icon: Icon(
             Icons.favorite_border,
