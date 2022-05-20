@@ -2,18 +2,24 @@
 
 Something new happens
 
-## Common layout widgets
+## Deploying Google Functions
 
-Check out this [link](https://docs.flutter.dev/development/ui/widgets), but the most common are:
+Run the following command in the directory that contains the `main.py` file
 
-### Standard widgets
+```
+gcloud beta functions deploy cms-upsert-hidush \
+--gen2 \
+--runtime python39 \
+--trigger-http \
+--entry-point main_upsert_hidush \
+--memory 128Mi \
+--set-env-vars CMS_API_KEY=XXXXXXX \
+--source . \
+--allow-unauthenticated
+```
 
-* Container: Adds padding, margins, borders, background color, or other decorations to a widget.
-* GridView: Lays widgets out as a scrollable grid.
-* ListView: Lays widgets out as a scrollable list.
-* Stack: Overlaps a widget on top of another.
+### Test the function
 
-### Material widgets
-
-* Card: Organizes related info into a box with rounded corners and a drop shadow. 
-* ListTile: Organizes up to 3 lines of text, and optional leading and trailing icons, into a row.
+```
+gcloud beta functions describe cms-upsert-hidush --gen2
+```

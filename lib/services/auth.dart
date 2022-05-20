@@ -15,7 +15,7 @@ class AuthService {
 
   static Future<FirebaseApp> initializeFirebase() async {
     // if (Firebase.apps.isEmpty) {
-    log("initialzing firebase");
+    log("[INFO] Initialzing firebase");
     return await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
     // } else {
     //   return Firebase.app();
@@ -48,9 +48,9 @@ class AuthService {
       return _serializeFirebaseUser(userCredential.user);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'account-exists-with-different-credential') {
-        log('account-exists-with-different-credential');
+        log('[ERROR] account-exists-with-different-credential');
       } else if (e.code == 'invalid-credential') {
-        log('invalid-credential');
+        log('[ERROR] invalid-credential');
       }
     } on Exception catch (e) {
       log(e.toString());
@@ -70,9 +70,9 @@ class AuthService {
     try {
       await auth.signOut();
       await GoogleSignIn().signOut();
-      log("User sign out");
+      log("[INFO] User sign out");
     } on Exception catch (e) {
-      log(e.toString());
+      log('[ERROR] ${e.toString()}');
     }
   }
 }
