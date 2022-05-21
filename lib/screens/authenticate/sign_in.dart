@@ -56,11 +56,11 @@ class _SignInState extends State<SignIn> {
                 buttonText: 'התחברות עם Google',
                 onPress: _auth.signInWithGoogle,
               ),
-              SignInButton(
-                icon: const Icon(Icons.person, size: 25.0),
-                buttonText: 'התחברות אנונימית',
-                onPress: _auth.signInAnonymous,
-              )
+              // SignInButton(
+              //   icon: const Icon(Icons.person, size: 25.0),
+              //   buttonText: 'התחברות אנונימית',
+              //   onPress: _auth.signInAnonymous,
+              // )
             ],
           ),
         ),
