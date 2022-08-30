@@ -1,11 +1,12 @@
 import 'dart:developer';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hidush/common/const.dart';
-import 'package:hidush/models/user.dart';
+// import 'package:hidush/models/dbuser.dart';
 import 'package:hidush/services/auth.dart';
-import 'package:provider/provider.dart';
+// import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
 
 class Personal extends StatefulWidget {
@@ -23,7 +24,7 @@ class _PersonalState extends State<Personal> {
 
   @override
   Widget build(BuildContext context) {
-    final AuthenticatedUser? user = Provider.of<AuthenticatedUser?>(context);
+    User? user = FirebaseAuth.instance.currentUser;
 
     return SettingsList(
       lightTheme: const SettingsThemeData(settingsListBackground: Colors.white),

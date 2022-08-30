@@ -1,9 +1,11 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:hidush/common/logger.dart';
+import 'package:hidush/models/dbuser.dart';
 import 'package:hidush/models/hidush.dart';
-import 'package:hidush/models/user.dart';
 import 'package:quiver/iterables.dart';
+
+final log = getLogger();
 
 const int hidushLimit = 10;
 
@@ -14,7 +16,7 @@ class DBService {
   DocumentSnapshot? newestHidush;
   DocumentSnapshot? oldestHidush;
 
-  Future<void> upsertUser(AuthenticatedUser user) async {
+  Future<void> upsertUser(User user) async {
     DocumentSnapshot snapShot = await users.doc(user.uid).get();
 
     if (snapShot.exists == false) {
@@ -22,20 +24,22 @@ class DBService {
         await users
             .doc(user.uid)
             .set({'uid': user.uid, 'email': user.email, 'likedHidushim': [], 'sharedHidushim': {}});
-        log("Succesfully created user. UID: ${user.uid}, Email: ${user.email}");
+        log.i("Succesfully created user. UID: ${user.uid}, Email: ${user.email}");
       } on Exception catch (e) {
-        log("Failed to create user. UID: ${user.uid}, Email: ${user.email}");
-        log(e.toString());
+        log.e("Failed to create user. UID: ${user.uid}, Email: ${user.email}");
+        log.e(e.toString());
       }
     } else {
-      log("User already exists. UID: ${user.uid}, Email: ${user.email}");
+      log.i("User already exists. UID: ${user.uid}, Email: ${user.email}");
     }
   }
 
-  Future<User> getUser(String userUid) async {
+  Future<DBUser> getUser(String userUid) async {
     DocumentSnapshot snapshot = await users.doc(userUid).get();
-    log('Get user data: ${snapshot.data().toString()}');
-    return User.fromJson(snapshot.data() as Map<String, dynamic>);
+    DBUser dbuser = DBUser.fromJson(snapshot.data() as Map<String, dynamic>);
+
+    log.i('Get user data. User: ${dbuser.toJson()}');
+    return dbuser;
   }
 
   Future<void> updateFavoriteHidush(String userUid, String hidushId, bool likeStatus) async {
@@ -51,9 +55,9 @@ class DBService {
         });
         await hidushim.doc(hidushId).update({'likes': FieldValue.increment(-1)});
       }
-      log("Succesfully updated the liked hidush. UserID: $userUid, HidushID: $hidushId, LikeStatus: $likeStatus");
+      log.i("Succesfully updated the liked hidush. UserID: $userUid, HidushID: $hidushId, LikeStatus: $likeStatus");
     } on Exception catch (e) {
-      log("Failed to updated liked hidush. UserID: $userUid, HidushID: $hidushId. Error: ${e.toString()}");
+      log.e("Failed to updated liked hidush. UserID: $userUid, HidushID: $hidushId. Error: ${e.toString()}");
     }
   }
 
@@ -61,9 +65,9 @@ class DBService {
     try {
       await users.doc(userUid).update({'sharedHidushim.$hidushId': FieldValue.increment(1)});
       await hidushim.doc(hidushId).update({'shares': FieldValue.increment(1)});
-      log("Succesfully updated the shared hidush. UserID: $userUid, HidushID: $hidushId");
+      log.i("Succesfully updated the shared hidush. UserID: $userUid, HidushID: $hidushId");
     } on Exception catch (e) {
-      log("Failed to updated shared hidush. UserID: $userUid, HidushID: $hidushId. Error: ${e.toString()}");
+      log.e("Failed to updated shared hidush. UserID: $userUid, HidushID: $hidushId. Error: ${e.toString()}");
     }
   }
 
@@ -108,7 +112,7 @@ class DBService {
     if (snapshot.docs.isNotEmpty && pagination != true) newestHidush = snapshot.docs.first;
     if (snapshot.docs.isNotEmpty) oldestHidush = snapshot.docs.last;
 
-    log('[DEBUG] NewestHidush: ${newestHidush?.id}. OldestHidush: ${oldestHidush?.id}');
+    log.d('NewestHidush: ${newestHidush?.id}. OldestHidush: ${oldestHidush?.id}');
 
     return snapshot.docs.map((e) => Hidush.fromJson(e.data() as Map<String, dynamic>)).toList();
   }

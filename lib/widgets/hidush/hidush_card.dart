@@ -1,15 +1,12 @@
-import 'dart:developer';
-import 'dart:math' as math;
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:hidush/models/user.dart';
+import 'package:hidush/common/logger.dart';
 import 'package:hidush/services/db.dart';
-import 'package:hidush/widgets/buttons/glass_chip.dart';
 import 'package:hidush/widgets/buttons/rabbi.dart';
 import 'package:hidush/widgets/hidush/hidush_footer.dart';
-import 'package:like_button/like_button.dart';
-import 'package:provider/provider.dart';
 import 'package:share/share.dart';
+
+final log = getLogger();
 
 class HidushCard extends StatefulWidget {
   HidushCard(
@@ -42,26 +39,24 @@ class _HidushCardState extends State<HidushCard> {
   DBService dbService = DBService();
 
   Future<void> _updateLikeReferences(bool isLiked) async {
-    final AuthenticatedUser? user = Provider.of<AuthenticatedUser?>(context, listen: false);
+    User? user = FirebaseAuth.instance.currentUser;
     await dbService.updateFavoriteHidush(user!.uid, widget.id, !isLiked);
     widget.isLiked = !isLiked;
     widget.likePressed != null ? widget.likePressed!((widget.key as ValueKey).value) : null;
   }
 
   Future<void> _updateShareRefrences() async {
-    final AuthenticatedUser? user = Provider.of<AuthenticatedUser?>(context, listen: false);
+    User? user = FirebaseAuth.instance.currentUser;
     await dbService.updateSharedHidush(user!.uid, widget.id);
   }
 
   Future<bool> _handleLikePress(bool isLiked) async {
-    log(isLiked.toString());
+    log.i(isLiked.toString());
     _updateLikeReferences(isLiked);
     return !isLiked;
   }
 
   Future<bool> _handleSharePress(bool isShared) async {
-    // final AuthenticatedUser? user = Provider.of<AuthenticatedUser?>(context, listen: false);
-
     await Share.share('${widget.quote} (${widget.source}) \n\n ${widget.peroosh} (${widget.rabbi})',
         subject: 'חידוש מעניין מחידוש');
     // await dbService.updateSharedHidush(user!.uid, widget.id);
@@ -72,7 +67,7 @@ class _HidushCardState extends State<HidushCard> {
 
   @override
   Widget build(BuildContext context) {
-    log("Card rendered. No: ${widget.id}");
+    log.i("Card rendered. No: ${widget.id}");
 
     return Container(
       decoration: BoxDecoration(
@@ -105,7 +100,7 @@ class _HidushCardState extends State<HidushCard> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    widget.source + ", " + widget.sourceDetails,
+                    "${widget.source}, ${widget.sourceDetails}",
                     style: const TextStyle(
                       fontSize: 10,
                       fontFamily: 'NotoSansHebrew',

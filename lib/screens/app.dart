@@ -1,12 +1,12 @@
-import 'dart:developer';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:hidush/models/user.dart';
+import 'package:hidush/common/logger.dart';
 import 'package:hidush/services/db.dart';
 import 'package:hidush/widgets/navigation/navigation.dart';
-import 'package:provider/provider.dart';
 
 import 'authenticate/sign_in.dart';
+
+final log = getLogger();
 
 class App extends StatefulWidget {
   const App({Key? key}) : super(key: key);
@@ -20,16 +20,18 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-    final AuthenticatedUser? user = Provider.of<AuthenticatedUser?>(context);
-
-    if (user == null) {
-      return const SignIn();
-    } else {
-      log('User logged in. UID: ${user.uid}, Email: ${user.email}');
-      return FutureBuilder(
-        future: dbService.upsertUser(user),
-        builder: (context, snapshot) => const Navigation(),
-      );
-    }
+    return StreamBuilder(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (BuildContext context, snapshot) {
+          if (snapshot.hasData) {
+            User user = (snapshot.data as User);
+            return FutureBuilder(
+              future: dbService.upsertUser(user),
+              builder: (context, snapshot) => const Navigation(),
+            );
+          } else {
+            return const SignIn();
+          }
+        });
   }
 }

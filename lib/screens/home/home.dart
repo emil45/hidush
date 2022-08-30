@@ -1,12 +1,14 @@
-import 'dart:developer';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:hidush/common/logger.dart';
 import 'package:hidush/common/utils.dart';
+import 'package:hidush/models/dbuser.dart';
 import 'package:hidush/models/hidush.dart';
-import 'package:hidush/models/user.dart';
 import 'package:hidush/services/db.dart';
 import 'package:hidush/widgets/hidush/hidush_card.dart';
-import 'package:provider/provider.dart';
+// import 'package:provider/provider.dart';
+
+final log = getLogger();
 
 class Home extends StatefulWidget {
   Home({Key? key}) : super(key: key);
@@ -20,7 +22,6 @@ class _HomeState extends State<Home> {
   List<Hidush> hidushim = [];
   final scrollController = ScrollController();
   late User user;
-  bool _hasNextPage = true;
   bool _isLoadMoreRunning = false;
 
   @override
@@ -59,14 +60,12 @@ class _HomeState extends State<Home> {
       setState(() {
         if (newHidushim.isNotEmpty) {
           refresh == true ? hidushim.insertAll(0, newHidushim) : hidushim.addAll(newHidushim);
-        } else {
-          _hasNextPage = false;
-        }
+        } else {}
 
         _isLoadMoreRunning = false;
       });
     } on Exception catch (e) {
-      log(e.toString());
+      log.i(e.toString());
       setState(() => _isLoadMoreRunning = false);
     }
   }
@@ -78,15 +77,15 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    final AuthenticatedUser? authUser = Provider.of<AuthenticatedUser?>(context);
+    User? user = FirebaseAuth.instance.currentUser;
 
     return FutureBuilder(
-      future: Future.wait([dbService.getUser(authUser!.uid)]),
+      future: Future.wait([dbService.getUser(user!.uid)]),
       builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
         if (!snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());
         } else {
-          user = snapshot.data![0];
+          DBUser user = snapshot.data![0];
 
           return RefreshIndicator(
             onRefresh: handleRefresh,

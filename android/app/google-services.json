@@ -14,6 +14,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "320033115359-cs1r00iukul50tg9bu7imr4535dhk96o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.hidush.hidush",
+            "certificate_hash": "4122700ca8a51d9f9fb4843609ffb569e12b2c41"
+          }
+        },
+        {
+          "client_id": "320033115359-srnifl74suuc54purpaq3sm8qn3ac001.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.hidush.hidush",
+            "certificate_hash": "84777f770eb58743fd0f0cbd6e35071b37358bc6"
+          }
+        },
+        {
           "client_id": "320033115359-0hj18iuta4mecsshc3p3ln3gab4s64l4.apps.googleusercontent.com",
           "client_type": 3
         }

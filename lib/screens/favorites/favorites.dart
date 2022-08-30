@@ -1,10 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hidush/common/utils.dart';
 import 'package:hidush/models/hidush.dart';
-import 'package:hidush/models/user.dart';
 import 'package:hidush/services/db.dart';
 import 'package:hidush/widgets/hidush/hidush_card.dart';
-import 'package:provider/provider.dart';
 
 class Favorites extends StatefulWidget {
   const Favorites({Key? key}) : super(key: key);
@@ -32,7 +31,7 @@ class _FavoritesState extends State<Favorites> {
 
   @override
   Widget build(BuildContext context) {
-    final AuthenticatedUser? user = Provider.of<AuthenticatedUser?>(context, listen: false);
+    User? user = FirebaseAuth.instance.currentUser;
 
     return FutureBuilder(
         future: dbService.getUserFavoriteHidushim(user!.uid),

@@ -1,66 +1,48 @@
-import 'dart:developer';
-
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:hidush/common/firebase_options.dart';
-import 'package:hidush/models/user.dart' hide User;
+import 'package:hidush/common/logger.dart';
+import 'package:hidush/common/utils.dart';
+
+final log = getLogger();
 
 class AuthService {
-  final FirebaseAuth auth = FirebaseAuth.instance;
-
-  AuthenticatedUser? _serializeFirebaseUser(User? user) {
-    return user != null ? AuthenticatedUser(uid: user.uid, email: user.email) : null;
-  }
-
-  static Future<FirebaseApp> initializeFirebase() async {
-    // if (Firebase.apps.isEmpty) {
-    log("[INFO] Initialzing firebase");
-    return await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-    // } else {
-    //   return Firebase.app();
-    // }
-  }
+  final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+  final GoogleSignIn googleSignIn = GoogleSignIn();
 
   // Sign In Anon
-  Future<AuthenticatedUser?> signInAnonymous() async {
+  Future<void> signInAnonymous() async {
     try {
-      UserCredential userCredential = await auth.signInAnonymously();
-      return _serializeFirebaseUser(userCredential.user);
+      await firebaseAuth.signInAnonymously();
     } catch (e) {
-      log(e.toString());
-      return null;
+      dialog('Error', e.toString());
+      log.e(e.toString());
     }
   }
 
-  Future<AuthenticatedUser?> signInWithGoogle() async {
+  Future<void> signInWithGoogle() async {
     try {
-      // Trigger the authentication flow
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-      // Obtain the auth details from the request
-      final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
-      // Create a new credential
+      log.d("Trying to sign in to google");
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      final GoogleSignInAuthentication googleAuth = await googleUser!.authentication;
       final credential =
-          GoogleAuthProvider.credential(accessToken: googleAuth?.accessToken, idToken: googleAuth?.idToken);
+          GoogleAuthProvider.credential(accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
+      UserCredential userCredential = await firebaseAuth.signInWithCredential(credential);
 
-      // Once signed in, return the UserCredential
-      UserCredential userCredential = await auth.signInWithCredential(credential);
-      return _serializeFirebaseUser(userCredential.user);
+      User? user = userCredential.user;
+      log.i("User successfully signed in. Email: ${user!.email}, DisplayName: ${user.displayName}, UID: ${user.uid}");
     } on FirebaseAuthException catch (e) {
       if (e.code == 'account-exists-with-different-credential') {
-        log('[ERROR] account-exists-with-different-credential');
+        log.e('account-exists-with-different-credential');
       } else if (e.code == 'invalid-credential') {
-        log('[ERROR] invalid-credential');
+        log.e('invalid-credential');
       }
+      dialog('Error', e.message.toString());
+      log.e(e.message);
+      rethrow;
     } on Exception catch (e) {
-      log(e.toString());
+      dialog('Error', e.toString());
+      log.e(e.toString());
     }
-    return null;
-  }
-
-  // Auth change user stream
-  Stream<AuthenticatedUser?> get user {
-    return auth.authStateChanges().map(_serializeFirebaseUser);
   }
 
   // Sign In Google
@@ -68,11 +50,12 @@ class AuthService {
   // Logout
   Future signOut() async {
     try {
-      await auth.signOut();
-      await GoogleSignIn().signOut();
-      log("[INFO] User sign out");
+      await googleSignIn.signOut();
+      await firebaseAuth.signOut();
+      log.i("User sign out");
     } on Exception catch (e) {
-      log('[ERROR] ${e.toString()}');
+      dialog('Error', e.toString());
+      log.e(e.toString());
     }
   }
 }

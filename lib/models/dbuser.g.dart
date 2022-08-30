@@ -1,21 +1,19 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'user.dart';
+part of 'dbuser.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-User _$UserFromJson(Map<String, dynamic> json) => User(
+DBUser _$DBUserFromJson(Map<String, dynamic> json) => DBUser(
       email: json['email'],
       uid: json['uid'],
-      likedHidushim: (json['likedHidushim'] as List<dynamic>)
-          .map((e) => e as String)
-          .toList(),
+      likedHidushim: (json['likedHidushim'] as List<dynamic>).map((e) => e as String).toList(),
       sharedHidushim: Map<String, int>.from(json['sharedHidushim'] as Map),
     );
 
-Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
+Map<String, dynamic> _$DBUserToJson(DBUser instance) => <String, dynamic>{
       'uid': instance.uid,
       'email': instance.email,
       'likedHidushim': instance.likedHidushim,
